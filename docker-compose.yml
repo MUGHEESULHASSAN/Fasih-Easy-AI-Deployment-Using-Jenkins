@@ -3,23 +3,26 @@ version: "3.9"
 services:
   backend:
     build: ./backend
-    container_name: backend
-    ports:
-      - "3000:3000"
+    expose:
+      - "3000"
     env_file:
       - ./backend/.env
+    networks:
+      - app-network
 
-  user-frontend:
+  frontend:
     build: ./frontend
-    container_name: frontend
+    expose:
+      - "80"
     env_file:
       - ./frontend/.env
     depends_on:
       - backend
-      
+    networks:
+      - app-network
+
   nginx:
     image: nginx:alpine
-    container_name: nginx
     ports:
       - "80:80"
     volumes:
@@ -27,3 +30,9 @@ services:
     depends_on:
       - backend
       - frontend
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
